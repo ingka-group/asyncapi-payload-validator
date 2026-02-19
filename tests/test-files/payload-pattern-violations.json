@@ -1,0 +1,10 @@
+{
+  "id": "ID-XYZ",  
+  "variant": "v1",
+  "container": {"type": "ONE", "code": "C1"},
+  "tags": ["x1", "yy"],
+  "meta": {"sharedValue": "A"},
+  "amount": 10,
+  "count": 10,
+  "note": "Ok"
+}

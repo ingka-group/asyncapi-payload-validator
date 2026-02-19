@@ -1,0 +1,70 @@
+asyncapi: '2.6.0'
+info:
+  title: Event API
+  version: '1.0.0'
+channels:
+  events:
+    publish:
+      message:
+        $ref: '#/components/messages/UserEvent'
+
+components:
+  messages:
+    UserEvent:
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - eventId
+          - eventType
+          - timestamp
+          - version
+          - data
+          - metadata
+        properties:
+          eventId:
+            type: string
+            description: Unique event identifier
+            pattern: '^evt-[a-f0-9-]+$'
+          eventType:
+            type: string
+            description: Type of event
+            enum:
+              - UserSignedUp
+              - UserLoggedIn
+              - UserLoggedOut
+          timestamp:
+            type: string
+            description: ISO 8601 timestamp
+            pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$'
+          version:
+            type: string
+            description: Event schema version
+            pattern: '^v\d+$'
+          data:
+            type: object
+            description: Event payload data
+            properties:
+              userId:
+                type: string
+              userName:
+                type: string
+              email:
+                type: string
+                format: email
+              roles:
+                type: array
+                items:
+                  type: string
+          metadata:
+            type: object
+            required:
+              - source
+            properties:
+              source:
+                type: string
+                description: Source system
+              correlationId:
+                type: string
+                description: Correlation ID for tracing
+                pattern: '^corr-[a-zA-Z0-9-]+$'

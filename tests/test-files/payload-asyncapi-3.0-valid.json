@@ -1,0 +1,11 @@
+{
+  "id": "12345",
+  "email": "user@example.com",
+  "username": "testuser",
+  "age": 25,
+  "status": "active",
+  "metadata": {
+    "source": "web-app",
+    "timestamp": "2025-01-15T10:30:00Z"
+  }
+}

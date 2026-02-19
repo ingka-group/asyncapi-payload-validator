@@ -1,0 +1,15 @@
+{
+  "id": "BAD-1",
+  "variant": "v1",
+  "container": {
+    "type": "ONE",
+    "extraOne": 123,
+    "unexpected": true
+  },
+  "tags": ["a", "toolong"],
+  "meta": {"sharedValue": "Z"},
+  "amount": 150,
+  "count": 7,
+  "note": "No",
+  "ghost": "field"
+}

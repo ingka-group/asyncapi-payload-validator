@@ -1,0 +1,10 @@
+{
+  "id": 123,
+  "variant": "v2",
+  "container": {"type": "TWO", "flag": "true"},
+  "tags": ["aa", 42],
+  "meta": {"sharedValue": "A"},
+  "amount": "notnumber",
+  "count": "ten",
+  "note": 5
+}

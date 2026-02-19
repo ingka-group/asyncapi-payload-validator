@@ -1,0 +1,39 @@
+name: _draft_release
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version for the release (e.g., 1.0.0)'
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version for the release (e.g., 1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  release_drafter:
+    name: Draft release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Draft Release
+        uses: release-drafter/release-drafter@v6
+        with:
+          version: ${{ inputs.version }}
+          tag: v${{ inputs.version }}
+          name: v${{ inputs.version }}
+          disable-autolabeler: true
+          publish: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

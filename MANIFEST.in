@@ -1,0 +1,19 @@
+# Include documentation and license files
+include README.md
+include LICENCE.md
+include CHANGELOG.md
+include CONTRIBUTING.md
+include CODE_OF_CONDUCT.md
+include SECURITY.md
+
+# Include package data
+recursive-include asyncapi_payload_validator/templates *.j2
+
+# Exclude unnecessary files
+exclude *.pyc
+exclude .gitignore
+exclude .pytest_cache
+
+# Exclude test files
+recursive-exclude tests *
+prune tests

@@ -1,0 +1,10 @@
+{
+  "id": "ID-111",
+  "variant": "v3",
+  "container": {"type": "THREE", "flag": true},
+  "tags": ["aa"],
+  "meta": {"sharedValue": "Z"},
+  "amount": 10,
+  "count": 5,
+  "note": "Valid"
+}

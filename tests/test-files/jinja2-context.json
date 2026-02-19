@@ -1,0 +1,13 @@
+{
+  "event_id": "evt-550e8400-e29b-41d4-a716-446655440000",
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "version": "v2",
+  "user_data": {
+    "userId": "12345",
+    "userName": "testuser",
+    "email": "test@example.com",
+    "roles": ["user", "admin"]
+  },
+  "source_system": "api-gateway",
+  "correlation_id": "corr-abc123-def456"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "ID-999",
+  "variant": "v2",
+  "container": {
+    "type": "TWO",
+    "flag": true,
+    "nested": {"inner": "x"}
+  },
+  "tags": ["ok", "good"],
+  "meta": {"sharedValue": "B"},
+  "amount": 0,
+  "count": 5,
+  "note": "Short"
+  , "strictObj": {"allowed": "ok"}
+}

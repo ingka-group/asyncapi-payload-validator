@@ -1,0 +1,10 @@
+{
+  "id": "ID-123",
+  "variant": "v1",
+  "container": {"type": "ONE", "code": "C12"},
+  "tags": ["a", "toolongvalue"],
+  "meta": {"sharedValue": "A"},
+  "amount": 10,
+  "count": 10,
+  "note": "TooLongNote"
+}

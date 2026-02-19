@@ -1,0 +1,10 @@
+{
+  "id": "ID-001",
+  "variant": "v2",
+  "container": {"type": "TWO", "flag": false},
+  "tags": ["aa"],
+  "meta": {"sharedValue": "B"},
+  "amount": -5,
+  "count": 11,
+  "note": "EdgeCase"
+}

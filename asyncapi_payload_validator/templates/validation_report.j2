@@ -1,0 +1,151 @@
+{# Jinja2 template for asyncapi-payload-validator report #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AsyncAPI PayloadValidation Report</title>
+  <style>
+    :root {
+      --ok: #2e7d32;
+      --warn: #ed6c02;
+      --err: #c62828;
+      --info: #1565c0;
+      --bg: #f7f9fb;
+      --card: #ffffff;
+      --border: #dfe3e8;
+      --code: #263238;
+      --mono: 'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+      --font: system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+    }
+    body { font-family: var(--font); margin:0; background: var(--bg); color:#333; }
+    header { background:#0d47a1; color:#fff; padding:1.2rem 1.6rem; }
+    header h1 { margin:0 0 .25rem; font-size:1.4rem; }
+    header .meta { font-size:.8rem; opacity:.85; }
+    main { padding:1.2rem 1.6rem 2.5rem; }
+    section { margin-bottom:1.8rem; }
+    h2 { font-size:1.1rem; margin:0 0 .75rem; display:flex; align-items:center; gap:.5rem; }
+    .status-pass { color: var(--ok); }
+    .status-fail { color: var(--err); }
+    .cards { display:grid; gap:1rem; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:0.85rem 0.95rem 1rem; box-shadow:0 1px 2px rgba(0,0,0,.05); display:flex; flex-direction:column; }
+    .card h3 { margin:.1rem 0 .55rem; font-size:.95rem; font-weight:600; }
+    .badge { border-radius:12px; padding:.15rem .55rem; font-size:.65rem; font-weight:600; letter-spacing:.5px; text-transform:uppercase; display:inline-block; }
+    .badge-pass { background:#e8f5e9; color:var(--ok); }
+    .badge-fail { background:#ffebee; color:var(--err); }
+    ul.issue-list { list-style: none; padding-left:1.05rem; margin:.25rem 0 0; position:relative; }
+    ul.issue-list li { padding:.2rem 0 .2rem .2rem; border-left:2px solid var(--border); font-size:.8rem; line-height:1.2rem; }
+    ul.issue-list li::marker { color: var(--err); }
+    ul.issue-list li span.path { font-family: var(--mono); color: var(--code); }
+    .empty { font-size:.75rem; color:#666; font-style:italic; }
+    pre.inline { margin:0; display:inline; }
+    code { font-family: var(--mono); background:#eceff1; padding:.05rem .35rem; border-radius:4px; font-size:.75rem; }
+    footer { font-size:.65rem; padding:1rem 1.6rem 1.6rem; color:#666; }
+  .matrix { width:max-content; min-width:1400px; border-collapse:collapse; font-size:.75rem; }
+    .matrix th, .matrix td { padding:.4rem .55rem; border:1px solid var(--border); text-align:left; vertical-align:top; }
+    .matrix th { background:#f0f3f6; font-weight:600; }
+  .hl-fail { background:#ffebee; color:#b71c1c; display:inline-block; width:100%; }
+  table.snippet { border-collapse:collapse; font-family:var(--mono); font-size:.7rem; width:100%; }
+  table.snippet td { border:1px solid #e0e0e0; padding:2px 4px; vertical-align:top; }
+  table.snippet td.ln { width:45px; background:#f7f7f7; color:#666; text-align:right; }
+  table.snippet td.mk { width:18px; text-align:center; font-weight:600; color:#c62828; }
+  /* Prevent wrapping in snippet source cells so long lines create horizontal overflow */
+  table.snippet td.src { white-space:pre; word-break:normal; }
+  /* Variant when used for payload highlighting (no arrow column) */
+  table.payload-snippet td.ln { width:45px; }
+  table.payload-snippet td.src { white-space:pre; }
+  table.payload-snippet tr.target-row td { background:#ffebee; }
+  table.payload-snippet tr.target-row td.src { color:#c62828; font-weight:600; }
+  /* Horizontal scroll wrapper */
+  .hscroll { overflow-x:auto; overflow-y:hidden; width:100%; margin-bottom:1.25rem; }
+  .hscroll::-webkit-scrollbar { height:8px; }
+  .hscroll::-webkit-scrollbar-track { background:#f0f3f6; }
+  .hscroll::-webkit-scrollbar-thumb { background:#c1c7ce; border-radius:4px; }
+  .hscroll:hover::-webkit-scrollbar-thumb { background:#9aa1a8; }
+  /* Ensure table can exceed viewport width to trigger scroll (handled in main .matrix rule) */
+  .summary-grid { display:flex; flex-wrap:wrap; gap:.35rem; margin-bottom:.7rem; }
+  .chip { background:#f0f3f6; border-radius:13px; padding:.32rem .62rem .32rem .58rem; font-size:.64rem; font-weight:600; display:inline-flex; align-items:center; gap:.45rem; line-height:1.1; border:1px solid var(--border); }
+  .chip .icon { font-size:.80rem; line-height:1; }
+  .chip .count { font-size:.66rem; font-weight:700; padding:0 .48rem; border-radius:10px; background:#fff; border:1px solid var(--border); min-width:1.5rem; text-align:center; }
+  .chip.fail { background:#ffeef0; color:var(--err); }
+  .chip.pass { background:#e6f6ec; color:var(--ok); }
+  .chip.fail .count { background:#fff5f6; }
+  .chip.pass .count { background:#f4fcf6; }
+  /* Tooltip styling for category descriptions */
+  .chip[data-tip] { position:relative; cursor:default; }
+  .chip[data-tip]:hover::after { content:attr(data-tip); position:absolute; left:0; top:100%; margin-top:6px; background:#1f2329; color:#fff; font-size:.60rem; line-height:1.15; padding:.45rem .55rem; border-radius:6px; max-width:260px; width:max-content; box-shadow:0 4px 14px rgba(0,0,0,.25); z-index:30; white-space:normal; }
+  .chip[data-tip]:hover::before { content:""; position:absolute; left:14px; top:100%; margin-top:0; border-left:6px solid transparent; border-right:6px solid transparent; border-bottom:6px solid #1f2329; }
+  /* Version badges (no background) */
+  header .meta .ver { font-family: var(--mono); background:none; padding:0; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>AsyncAPI Payload Validation Report</h1>
+  <div class="meta">Generated: {{ generated_at }}
+    {% if spec_title %} · Title: <strong>{{ spec_title }}</strong>{% endif %}
+    {% if spec_version %} · Spec Version: <span class="ver">{{ spec_version }}</span>{% endif %}
+    {% if asyncapi_version %} · AsyncAPI: <span class="ver">{{ asyncapi_version }}</span>{% endif %}
+    · Result: <strong class="{{ 'status-fail' if summary.fail else 'status-pass' }}">{{ 'FAIL' if summary.fail else 'PASS' }}</strong>
+  </div>
+</header>
+<main>
+  <section>
+    <h2>Summary</h2>
+    <div class="summary-grid">
+      {# icon_map now provided by context from Python; no inline redefinition #}
+      {% set desc_map = {
+        'Extra Attributes':'JSON fields present in payload but absent from schema (excluding zones with additionalProperties).',
+        'Type Mismatches':'Payload values whose runtime/coercible type does not satisfy the declared schema type(s).',
+        'Missing Required':'Schema-required properties that are completely missing from the payload.',
+        'Length Violations':'String values breaching declared minLength or maxLength constraints.',
+        'Pattern Violations':'String (or coercible scalar) values failing their regex pattern constraint.',
+        'Enum Violations':'Values not found in the enumerated allowed set for that property.',
+        'Numeric Violations':'Numeric values violating minimum, maximum or multipleOf constraints.',
+        'Composition Violations':'Values failing oneOf / anyOf / allOf cardinality requirements.'
+      } %}
+      {% for category, data in counts.items() %}
+  <div class="chip {{ 'fail' if data.fail else 'pass' }}" data-tip="{{ desc_map.get(category,'') }}">
+          <span class="icon">{{ icon_map.get(category,'') }}</span>
+          <span class="text">{{ category }}</span>
+          <span class="count">{{ data.count }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <h2>Issues</h2>
+    <div class="hscroll">
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Path</th>
+          <th>Message</th>
+          <th>{{ spec_label }}</th>
+          <th>Payload (JSON)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+        <tr class="sev-{{ r.severity }}">
+          <td class="category"><span>{{ r.category_icon }}</span> {{ r.category }}</td>
+          <td><code>{{ r.path }}</code></td>
+          <td>{{ r.message }}</td>
+          <td>{% if r.spec_table %}{{ r.spec_table | safe }}{% endif %}</td>
+          <td>{% if r.payload_table %}{{ r.payload_table | safe }}{% endif %}</td>
+        </tr>
+        {% endfor %}
+        {% if rows|length == 0 %}
+        <tr><td colspan="5" style="text-align:center; font-style:italic;">No issues.</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+    </div>
+  </section>
+</main>
+<footer>
+  Generated by asyncapi-payload-validator.
+</footer>
+</body>
+</html>

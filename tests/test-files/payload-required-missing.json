@@ -1,0 +1,9 @@
+{
+  "variant": "v1",
+  "container": {"type": "ONE", "code": "C11"},
+  "tags": ["aa"],
+  "meta": {"sharedValue": "A"},
+  "amount": 5,
+  "count": 5,
+  "note": "Okay"
+}

@@ -1,0 +1,59 @@
+asyncapi: 3.0.0
+info:
+  title: Test API v3
+  version: 1.0.0
+  description: AsyncAPI 3.0 test specification
+
+channels:
+  userChannel:
+    address: user/events
+    messages:
+      UserSignedUp:
+        $ref: '#/components/messages/UserSignedUp'
+
+operations:
+  sendUserEvent:
+    action: send
+    channel:
+      $ref: '#/channels/userChannel'
+    messages:
+      - $ref: '#/components/messages/UserSignedUp'
+
+components:
+  messages:
+    UserSignedUp:
+      messageId: UserSignedUp
+      payload:
+        type: object
+        required:
+          - id
+          - email
+          - username
+        properties:
+          id:
+            type: string
+            pattern: '^[0-9]+$'
+          email:
+            type: string
+            format: email
+          username:
+            type: string
+            minLength: 3
+            maxLength: 50
+          age:
+            type: integer
+            minimum: 18
+            maximum: 120
+          status:
+            type: string
+            enum:
+              - active
+              - inactive
+              - pending
+          metadata:
+            type: object
+            properties:
+              source:
+                type: string
+              timestamp:
+                type: string

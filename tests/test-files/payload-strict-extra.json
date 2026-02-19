@@ -1,0 +1,15 @@
+{
+  "id": "ID-654",
+  "variant": "v1",
+  "container": {
+    "type": "ONE",
+    "code": "C05",
+    "extraOne": "optional"
+  },
+  "tags": ["aa", "bb"],
+  "meta": {"sharedValue": "A"},
+  "amount": 50,
+  "count": 10,
+  "note": "Hello",
+  "strictObj": {"allowed": "ok", "notAllowed": 42}
+}
