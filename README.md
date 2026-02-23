@@ -79,16 +79,16 @@ See [Python API Reference](docs/python-api.md) for the full API, return value st
 
 ## Validation Rules
 
-| Category | Description |
-|----------|-------------|
-| Extra Attributes | Fields in payload not declared in schema |
-| Type Mismatches | Incorrect data types (with lenient coercion) |
-| Missing Required | Required fields absent from payload |
-| Length Violations | String minLength/maxLength constraints |
-| Pattern Violations | Regex pattern mismatches |
-| Enum Violations | Values not in allowed enum list |
-| Numeric Violations | min/max/multipleOf constraints |
-| Composition Violations | oneOf/anyOf/allOf rule failures |
+| Icon | Category | Description |
+|------|----------|-------------|
+| ➕ | Extra Attributes | Fields in payload not declared in schema |
+| ❌ | Type Mismatches | Incorrect data types (with lenient coercion) |
+| 🚫 | Missing Required | Required fields absent from payload |
+| ↔️ | Length Violations | String minLength/maxLength constraints |
+| #️⃣ | Pattern Violations | Regex pattern mismatches |
+| ✅ | Enum Violations | Values not in allowed enum list |
+| 🔢 | Numeric Violations | min/max/multipleOf constraints |
+| 🧩 | Composition Violations | oneOf/anyOf/allOf rule failures |
 
 ## Exit Codes
 
