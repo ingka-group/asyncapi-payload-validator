@@ -14,13 +14,14 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: write
+  pull-requests: read
+
 jobs:
   release_drafter:
     name: Draft release
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
