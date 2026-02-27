@@ -49,6 +49,7 @@ runs:
       with:
         oidc-provider-name: ${{ inputs.oidc-provider }}
         oidc-audience: ${{ inputs.oidc-audience }}
+        version: 2.93.0
 
     - name: Configure JFrog server
       shell: bash
