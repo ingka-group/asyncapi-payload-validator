@@ -66,7 +66,7 @@ runs:
         REPO: ${{ inputs.jf-pypi-repo }}
         DIST: ${{ inputs.dist-path }}
       run: |
-        echo "Uploading ${PKG} v${VER} to ${REPO}..."
+        echo "Uploading ${PKG} v${VER}..."
 
         jf rt upload \
           "${DIST}*.whl" \
@@ -120,21 +120,12 @@ runs:
       env:
         PKG: ${{ inputs.package-name }}
         VER: ${{ inputs.version }}
-        REPO: ${{ inputs.jf-pypi-repo }}
         STATUS: ${{ steps.xray-scan.outputs.status }}
       run: |
-        BUILD_URL="https://${{ inputs.jf-url }}/ui/builds/${PKG}/${VER}"
-        ARTIFACT_URL="https://${{ inputs.jf-url }}/ui/repos/tree/General/${REPO}/${PKG}/${VER}"
-
-        echo "### JFrog Xray Scan - ${PKG} v${VER}" >> $GITHUB_STEP_SUMMARY
+        echo "### Xray Scan - ${PKG} v${VER}" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         if [ "${STATUS}" = "passed" ]; then
           echo "**Result:** Passed" >> $GITHUB_STEP_SUMMARY
         else
           echo "**Result:** Failed - violations found" >> $GITHUB_STEP_SUMMARY
         fi
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "| Resource | Link |" >> $GITHUB_STEP_SUMMARY
-        echo "|---|---|" >> $GITHUB_STEP_SUMMARY
-        echo "| Build & Xray | [${BUILD_URL}](${BUILD_URL}) |" >> $GITHUB_STEP_SUMMARY
-        echo "| Artifacts | [${ARTIFACT_URL}](${ARTIFACT_URL}) |" >> $GITHUB_STEP_SUMMARY
