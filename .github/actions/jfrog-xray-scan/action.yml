@@ -1,0 +1,140 @@
+name: "JFrog Xray Scan - Python"
+description: "Upload Python package to JFrog Artifactory and run Xray security scan via OIDC"
+
+inputs:
+  jf-url:
+    description: "JFrog platform URL (without https://)"
+    required: true
+  oidc-provider:
+    description: "JFrog OIDC provider name"
+    required: true
+  oidc-audience:
+    description: "JFrog OIDC audience"
+    required: true
+  jf-pypi-repo:
+    description: "JFrog PyPI repository name"
+    required: true
+  package-name:
+    description: "Package name for build info"
+    required: true
+  version:
+    description: "Package version"
+    required: true
+  dist-path:
+    description: "Path to distribution files"
+    required: false
+    default: "dist/"
+  xray-watches:
+    description: "Comma-separated Xray watches to evaluate"
+    required: false
+    default: ""
+  fail-on-violation:
+    description: "Fail if Xray finds a policy violation"
+    required: false
+    default: "true"
+
+outputs:
+  scan-status:
+    description: "Result of the Xray scan (passed/failed)"
+    value: ${{ steps.xray-scan.outputs.status }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up JFrog CLI
+      uses: jfrog/setup-jfrog-cli@v4
+      id: jfrog-login
+      env:
+        JF_URL: https://${{ inputs.jf-url }}
+      with:
+        oidc-provider-name: ${{ inputs.oidc-provider }}
+        oidc-audience: ${{ inputs.oidc-audience }}
+
+    - name: Configure JFrog server
+      shell: bash
+      run: |
+        jf c add artifactory \
+          --url="https://${{ inputs.jf-url }}" \
+          --access-token="${{ steps.jfrog-login.outputs.oidc-token }}" \
+          --interactive=false
+
+    - name: Upload to Artifactory
+      shell: bash
+      env:
+        PKG: ${{ inputs.package-name }}
+        VER: ${{ inputs.version }}
+        REPO: ${{ inputs.jf-pypi-repo }}
+        DIST: ${{ inputs.dist-path }}
+      run: |
+        echo "Uploading ${PKG} v${VER} to ${REPO}..."
+
+        jf rt upload \
+          "${DIST}*.whl" \
+          "${REPO}/${PKG}/${VER}/" \
+          --build-name="${PKG}" \
+          --build-number="${VER}"
+
+        jf rt upload \
+          "${DIST}*.tar.gz" \
+          "${REPO}/${PKG}/${VER}/" \
+          --build-name="${PKG}" \
+          --build-number="${VER}"
+
+        jf rt build-publish "${PKG}" "${VER}"
+
+    - name: Xray build scan
+      id: xray-scan
+      shell: bash
+      env:
+        PKG: ${{ inputs.package-name }}
+        VER: ${{ inputs.version }}
+        WATCHES: ${{ inputs.xray-watches }}
+        FAIL: ${{ inputs.fail-on-violation }}
+      run: |
+        echo "Scanning build ${PKG}/${VER} with Xray..."
+
+        ARGS=("${PKG}" "${VER}")
+
+        if [ -n "${WATCHES}" ]; then
+          ARGS+=(--watches "${WATCHES}")
+        fi
+
+        if [ "${FAIL}" = "true" ]; then
+          ARGS+=(--fail)
+        fi
+
+        ARGS+=(--format table)
+
+        if jf bs "${ARGS[@]}"; then
+          echo "status=passed" >> $GITHUB_OUTPUT
+          echo "Xray scan passed"
+        else
+          echo "status=failed" >> $GITHUB_OUTPUT
+          echo "::error::Xray scan found violations"
+          exit 1
+        fi
+
+    - name: Scan summary
+      if: always()
+      shell: bash
+      env:
+        PKG: ${{ inputs.package-name }}
+        VER: ${{ inputs.version }}
+        REPO: ${{ inputs.jf-pypi-repo }}
+        STATUS: ${{ steps.xray-scan.outputs.status }}
+      run: |
+        BUILD_URL="https://${{ inputs.jf-url }}/ui/builds/${PKG}/${VER}"
+        ARTIFACT_URL="https://${{ inputs.jf-url }}/ui/repos/tree/General/${REPO}/${PKG}/${VER}"
+
+        echo "### JFrog Xray Scan - ${PKG} v${VER}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        if [ "${STATUS}" = "passed" ]; then
+          echo "**Result:** Passed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "**Result:** Failed - violations found" >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Resource | Link |" >> $GITHUB_STEP_SUMMARY
+        echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+        echo "| Build & Xray | [${BUILD_URL}](${BUILD_URL}) |" >> $GITHUB_STEP_SUMMARY
+        echo "| Artifacts | [${ARTIFACT_URL}](${ARTIFACT_URL}) |" >> $GITHUB_STEP_SUMMARY
