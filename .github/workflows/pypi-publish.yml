@@ -114,8 +114,12 @@ jobs:
           name: python-package-distributions
           path: dist/
 
+      # - name: Publish to PyPI
+      #   uses: pypa/gh-action-pypi-publish@release/v1
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
 
       - name: Set version output
         id: set-version
