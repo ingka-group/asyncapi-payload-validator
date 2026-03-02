@@ -12,34 +12,34 @@ permissions:
   contents: read
 
 jobs:
-  # validate-version:
-  #   name: Validate version
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     version-exists: ${{ steps.check-version.outputs.exists }}
+  validate-version:
+    name: Validate version
+    runs-on: ubuntu-latest
+    outputs:
+      version-exists: ${{ steps.check-version.outputs.exists }}
     
-  #   steps:
-  #     - name: Check if version exists on PyPI
-  #       id: check-version
-  #       run: |
-  #         echo "Checking if version ${{ inputs.version }} exists on PyPI..."
+    steps:
+      - name: Check if version exists on PyPI
+        id: check-version
+        run: |
+          echo "Checking if version ${{ inputs.version }} exists on PyPI..."
           
-  #         # Query PyPI API for the package
-  #         RESPONSE=$(curl -s "https://test.pypi.org/pypi/asyncapi-payload-validator/json" || echo '{}')
+          # Query PyPI API for the package
+          RESPONSE=$(curl -s "https://pypi.org/pypi/asyncapi-payload-validator/json" || echo '{}')
           
-  #         # Check if the version exists in releases
-  #         if echo "$RESPONSE" | grep -q "\"${{ inputs.version }}\""; then
-  #           echo "exists=true" >> $GITHUB_OUTPUT
-  #           echo "::error::Version ${{ inputs.version }} already exists on PyPI!"
-  #           exit 1
-  #         else
-  #           echo "exists=false" >> $GITHUB_OUTPUT
-  #           echo "✅ Version ${{ inputs.version }} is available"
-  #         fi
+          # Check if the version exists in releases
+          if echo "$RESPONSE" | grep -q "\"${{ inputs.version }}\""; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "::error::Version ${{ inputs.version }} already exists on PyPI!"
+            exit 1
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "✅ Version ${{ inputs.version }} is available"
+          fi
 
   build:
     name: Build distribution
-    #needs: [validate-version]
+    needs: [validate-version]
     runs-on: ubuntu-latest
 
     steps:
@@ -114,12 +114,8 @@ jobs:
           name: python-package-distributions
           path: dist/
 
-      # - name: Publish to PyPI
-      #   uses: pypa/gh-action-pypi-publish@release/v1
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
 
       - name: Set version output
         id: set-version
