@@ -8,6 +8,9 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: read
+
 jobs:
   validate-version:
     name: Validate version
@@ -66,9 +69,35 @@ jobs:
           name: python-package-distributions
           path: dist/
 
+  jfrog-xray-scan:
+    name: JFrog Xray Scan
+    needs: [build]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: JFrog Xray Scan
+        uses: ./.github/actions/jfrog-xray-scan
+        with:
+          jf-url: ${{ secrets.JF_URL }}
+          oidc-provider: ${{ secrets.JF_OIDC_PROVIDER }}
+          oidc-audience: ${{ secrets.JF_OIDC_AUDIENCE }}
+          jf-pypi-repo: ${{ secrets.JF_PYPI_REPO }}
+          package-name: asyncapi-payload-validator
+          version: ${{ inputs.version }}
+
   publish-to-pypi:
     name: Publish to PyPI
-    needs: [build]
+    needs: [build, jfrog-xray-scan]
     runs-on: ubuntu-latest
     environment:
       name: pypi

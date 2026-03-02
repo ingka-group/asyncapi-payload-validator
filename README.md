@@ -1,6 +1,6 @@
 # AsyncAPI Payload Validator
 
-[![PyPI version](https://badge.fury.io/py/asyncapi-payload-validator.svg)](https://badge.fury.io/py/asyncapi-payload-validator)
+[![PyPI version](https://img.shields.io/pypi/v/asyncapi-payload-validator.svg)](https://pypi.org/project/asyncapi-payload-validator/)
 [![Python Support](https://img.shields.io/pypi/pyversions/asyncapi-payload-validator.svg)](https://pypi.org/project/asyncapi-payload-validator/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
