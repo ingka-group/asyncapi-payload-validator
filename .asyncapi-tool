@@ -1,0 +1,22 @@
+---
+title: AsyncAPI Payload Validator
+description: >-
+  A Python library and CLI for validating message payloads against AsyncAPI
+  2.x and 3.x specifications written in JSON or YAML format. Performs detailed
+  JSON Schema validation including type checking, required fields, string
+  patterns, enums, numeric constraints, and composition rules. Supports HTML
+  reports, Jinja2 template validation, and is CI/CD ready with GitHub Actions
+  and GitLab CI examples.
+links:
+  websiteUrl: https://pypi.org/project/asyncapi-payload-validator/
+  docsUrl: https://github.com/ingka-group/asyncapi-payload-validator#readme
+  repoUrl: https://github.com/ingka-group/asyncapi-payload-validator
+filters:
+  language: Python
+  technology:
+    - asyncapi-spec
+  categories:
+    - validator
+    - mocking-and-testing
+    - cli
+  hasCommercial: false
