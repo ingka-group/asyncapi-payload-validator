@@ -3,6 +3,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/asyncapi-payload-validator.svg)](https://pypi.org/project/asyncapi-payload-validator/)
 [![Python Support](https://img.shields.io/pypi/pyversions/asyncapi-payload-validator.svg)](https://pypi.org/project/asyncapi-payload-validator/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI Downloads](https://static.pepy.tech/personalized-badge/asyncapi-payload-validator?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/asyncapi-payload-validator)
 
 A Python tool for validating JSON message payloads against AsyncAPI specifications. Performs detailed JSON Schema validation including type checking, constraints, patterns, enums, and composition rules.
 
